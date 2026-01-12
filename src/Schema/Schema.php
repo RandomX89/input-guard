@@ -3,6 +3,7 @@ namespace RandomX98\InputGuard\Schema;
 
 use RandomX98\InputGuard\Core\Level;
 use RandomX98\InputGuard\Core\Result;
+use RandomX98\InputGuard\Support\Path;
 
 final class Schema {
     /** @var array<string,Field> */
@@ -10,8 +11,8 @@ final class Schema {
 
     public static function make(): self { return new self(); }
 
-    public function field(string $name, Field $field): self {
-        $this->fields[$name] = $field;
+    public function field(string $path, Field $field): self {
+        $this->fields[$path] = $field;
         return $this;
     }
 
@@ -19,14 +20,20 @@ final class Schema {
         $values = [];
         $errors = [];
 
-        foreach ($this->fields as $name => $field) {
+        foreach ($this->fields as $path => $field) {
+            $raw = Path::get($input, $path);
+
             [$value, $errs] = $field->process(
-                $input[$name] ?? null,
+                $raw,
                 $level,
-                ['path' => $name, 'input' => $input]
+                [
+                    'path' => $path,
+                    'input' => $input,
+                    'level' => $level,
+                ]
             );
 
-            $values[$name] = $value;
+            $values = Path::set($values, $path, $value);
             $errors = array_merge($errors, $errs);
         }
 

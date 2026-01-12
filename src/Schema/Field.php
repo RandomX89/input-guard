@@ -19,18 +19,36 @@ final class Field {
         $this->validatorsByLevel = $validatorsByLevel;
     }
 
-    /** @param Sanitizer[] $rules */
+    /** SET: replaces rules for that level */
     public function sanitize(Level $level, array $rules): self {
         $san = $this->sanitizersByLevel;
-        $san[$level->value] = $rules;
+        $san[$level->value] = $this->assertSanitizers($rules);
         ksort($san);
         return new self($san, $this->validatorsByLevel);
     }
 
-    /** @param Validator[] $rules */
+    /** SET: replaces rules for that level */
     public function validate(Level $level, array $rules): self {
         $val = $this->validatorsByLevel;
-        $val[$level->value] = $rules;
+        $val[$level->value] = $this->assertValidators($rules);
+        ksort($val);
+        return new self($this->sanitizersByLevel, $val);
+    }
+
+    /** APPEND: adds rules after existing ones for that level */
+    public function addSanitize(Level $level, array $rules): self {
+        $san = $this->sanitizersByLevel;
+        $existing = $san[$level->value] ?? [];
+        $san[$level->value] = array_values(array_merge($existing, $this->assertSanitizers($rules)));
+        ksort($san);
+        return new self($san, $this->validatorsByLevel);
+    }
+
+    /** APPEND: adds rules after existing ones for that level */
+    public function addValidate(Level $level, array $rules): self {
+        $val = $this->validatorsByLevel;
+        $existing = $val[$level->value] ?? [];
+        $val[$level->value] = array_values(array_merge($existing, $this->assertValidators($rules)));
         ksort($val);
         return new self($this->sanitizersByLevel, $val);
     }
@@ -55,5 +73,27 @@ final class Field {
         }
 
         return [$value, $errors];
+    }
+
+    /** @param array<int,mixed> $rules @return Sanitizer[] */
+    private function assertSanitizers(array $rules): array {
+        foreach ($rules as $r) {
+            if (!$r instanceof Sanitizer) {
+                throw new \InvalidArgumentException('All sanitize rules must implement Sanitizer');
+            }
+        }
+        /** @var Sanitizer[] $rules */
+        return array_values($rules);
+    }
+
+    /** @param array<int,mixed> $rules @return Validator[] */
+    private function assertValidators(array $rules): array {
+        foreach ($rules as $r) {
+            if (!$r instanceof Validator) {
+                throw new \InvalidArgumentException('All validate rules must implement Validator');
+            }
+        }
+        /** @var Validator[] $rules */
+        return array_values($rules);
     }
 }
