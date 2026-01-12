@@ -18,4 +18,7 @@ final class ErrorCode {
     public const MIN = 'min';
     public const MAX = 'max';
     public const IN_SET = 'in_set';
+    public const ARRAY = 'array';
+    public const MIN_ITEMS = 'min_items';
+    public const MAX_ITEMS = 'max_items';
 }

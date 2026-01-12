@@ -14,4 +14,7 @@ final class Val {
     public static function regex(string $pattern, bool $allowEmpty = true): RegexValidator { return new RegexValidator($pattern, $allowEmpty); }
     /** @param array<int,string|int> $allowed */
     public static function inSet(array $allowed, bool $strict = true): InSetValidator { return new InSetValidator($allowed, $strict); }
+    public static function typeArray(): TypeArrayValidator { return new TypeArrayValidator(); }
+    public static function minItems(int $min): MinItemsValidator { return new MinItemsValidator($min); }
+    public static function maxItems(int $max): MaxItemsValidator { return new MaxItemsValidator($max); }
 }

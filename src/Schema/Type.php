@@ -29,4 +29,13 @@ final class Type {
             ->sanitize(Level::BASE, [San::trim(), San::nullIfEmpty(), San::toInt()])
             ->validate(Level::BASE, [Val::typeInt()]);
     }
+
+    public static function array(): Field {
+        return (new Field())
+            ->validate(Level::BASE, [Val::typeArray()]);
+    }
+
+    public static function arrayOf(Field $elementField): ArrayOf {
+        return new ArrayOf(self::array(), $elementField);
+    }
 }
