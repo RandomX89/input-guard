@@ -9,7 +9,7 @@ final class TypeStringValidator implements Validator {
     public function validate(mixed $value, array $context = []): array {
         if ($value === null) return [];
         if (!is_string($value)) {
-            return [new Error($context['path'] ?? '', ErrorCode::STRING, 'Expected a string')];
+            return [new Error($context['path'] ?? '', ErrorCode::STRING, null, ['actual_type' => gettype($value)])];
         }
         return [];
     }

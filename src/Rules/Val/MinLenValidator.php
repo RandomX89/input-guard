@@ -14,8 +14,8 @@ final class MinLenValidator implements Validator {
             return [new Error(
                 $context['path'] ?? '',
                 ErrorCode::MIN_LEN,
-                'String is too short',
-                ['min' => $this->min]
+                null,
+                ['min' => $this->min, 'actual' => mb_strlen($value)]
             )];
         }
         return [];

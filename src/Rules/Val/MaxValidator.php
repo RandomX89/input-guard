@@ -11,7 +11,12 @@ final class MaxValidator implements Validator {
     public function validate(mixed $value, array $context = []): array {
         if ($value === null || !is_int($value)) return [];
         if ($value > $this->max) {
-            return [new Error($context['path'] ?? '', ErrorCode::MAX, 'Value is too large', ['max' => $this->max])];
+            return [new Error(
+                $context['path'] ?? '',
+                ErrorCode::MAX,
+                null,
+                ['max' => $this->max, 'actual' => $value]
+            )];
         }
         return [];
     }

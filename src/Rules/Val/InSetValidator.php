@@ -20,8 +20,8 @@ final class InSetValidator implements Validator {
             return [new Error(
                 $context['path'] ?? '',
                 ErrorCode::IN_SET,
-                'Value is not allowed',
-                ['allowed' => $this->allowed]
+                null,
+                ['allowed' => $this->allowed, 'value' => $value]
             )];
         }
 

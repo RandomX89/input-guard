@@ -13,7 +13,7 @@ final class RegexValidator implements Validator {
 
     public function validate(mixed $value, array $context = []): array {
         if ($value === null) return [];
-        if (!is_string($value)) return [new Error($context['path'] ?? '', ErrorCode::REGEX, 'Invalid format')];
+        if (!is_string($value)) return [new Error($context['path'] ?? '', ErrorCode::REGEX, null, ['pattern' => $this->pattern, 'value' => $value])];
 
         if ($value === '' && $this->allowEmpty) return [];
 
@@ -22,8 +22,8 @@ final class RegexValidator implements Validator {
             return [new Error(
                 $context['path'] ?? '',
                 ErrorCode::REGEX,
-                'Invalid format',
-                ['pattern' => $this->pattern]
+                null,
+                ['pattern' => $this->pattern, 'value' => $value]
             )];
         }
 

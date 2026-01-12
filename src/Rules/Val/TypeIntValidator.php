@@ -9,7 +9,7 @@ final class TypeIntValidator implements Validator {
     public function validate(mixed $value, array $context = []): array {
         if ($value === null) return [];
         if (!is_int($value)) {
-            return [new Error($context['path'] ?? '', ErrorCode::INT, 'Expected an integer')];
+            return [new Error($context['path'] ?? '', ErrorCode::INT, null, ['actual_type' => gettype($value)])];
         }
         return [];
     }

@@ -11,7 +11,12 @@ final class MaxLenValidator implements Validator {
     public function validate(mixed $value, array $context = []): array {
         if ($value === null || !is_string($value)) return [];
         if (mb_strlen($value) > $this->max) {
-            return [new Error($context['path'] ?? '', ErrorCode::MAX_LEN, 'String is too long', ['max' => $this->max])];
+            return [new Error(
+                $context['path'] ?? '',
+                ErrorCode::MAX_LEN,
+                null,
+                ['max' => $this->max, 'actual' => mb_strlen($value)]
+            )];
         }
         return [];
     }

@@ -11,7 +11,12 @@ final class MinValidator implements Validator {
     public function validate(mixed $value, array $context = []): array {
         if ($value === null || !is_int($value)) return [];
         if ($value < $this->min) {
-            return [new Error($context['path'] ?? '', ErrorCode::MIN, 'Value is too small', ['min' => $this->min])];
+            return [new Error(
+                $context['path'] ?? '',
+                ErrorCode::MIN,
+                null,
+                ['min' => $this->min, 'actual' => $value]
+            )];
         }
         return [];
     }

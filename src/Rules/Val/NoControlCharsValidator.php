@@ -16,7 +16,8 @@ final class NoControlCharsValidator implements Validator {
             return [new Error(
                 $context['path'] ?? '',
                 ErrorCode::NO_CONTROL_CHARS,
-                'Control characters are not allowed'
+                null,
+                []
             )];
         }
 
