@@ -8,7 +8,14 @@ use RandomX98\InputGuard\Core\ErrorCode;
 final class RequiredValidator implements Validator {
     public function validate(mixed $value, array $context = []): array {
         if ($value === null || (is_string($value) && $value === '')) {
-            return [new Error($context['path'] ?? '', ErrorCode::REQUIRED, 'Value is required')];
+            return [
+                new Error(
+                    path: $context['path'] ?? '',
+                    code: ErrorCode::REQUIRED,
+                    message: null,
+                    meta: []
+                )
+            ];
         }
         return [];
     }
