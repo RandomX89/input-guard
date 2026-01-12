@@ -6,37 +6,67 @@ use RandomX98\InputGuard\Core\Result;
 use RandomX98\InputGuard\Support\Path;
 
 final class Schema {
-    /** @var array<string,Field> */
-    private array $fields = [];
+  /** @var array<string,Field> */
+  private array $fields = [];
 
-    public static function make(): self { return new self(); }
+  public static function make(): self { return new self(); }
 
-    public function field(string $path, Field $field): self {
-        $this->fields[$path] = $field;
-        return $this;
-    }
+  public function field(string $path, Field $field): self {
+    $this->fields[$path] = $field;
+    return $this;
+  }
 
-    public function process(array $input, Level $level): Result {
-        $values = [];
-        $errors = [];
+  /**
+   * Convenience: apply a field to each element of an array at $arrayPath ("items" => "items.*")
+   */
+  public function each(string $arrayPath, Field $elementField): self {
+    $arrayPath = trim($arrayPath);
+    $path = rtrim($arrayPath, '.') . '.*';
+    return $this->field($path, $elementField);
+  }
 
-        foreach ($this->fields as $path => $field) {
-            $raw = Path::get($input, $path);
+  public function process(array $input, Level $level): Result {
+    $values = [];
+    $errors = [];
 
-            [$value, $errs] = $field->process(
-                $raw,
-                $level,
-                [
-                    'path' => $path,
-                    'input' => $input,
-                    'level' => $level,
-                ]
-            );
+    foreach ($this->fields as $path => $field) {
+      if (Path::hasWildcard($path)) {
+        $matches = Path::expand($input, $path);
 
-            $values = Path::set($values, $path, $value);
-            $errors = array_merge($errors, $errs);
+        foreach ($matches as $m) {
+          [$value, $errs] = $field->process(
+            $m['value'],
+            $level,
+            [
+              'path' => $m['path'],   // concrete path like items.0.name
+              'input' => $input,
+              'level' => $level,
+            ]
+          );
+
+          $values = Path::set($values, $m['path'], $value);
+          $errors = array_merge($errors, $errs);
         }
 
-        return new Result($values, $errors);
+        continue;
+      }
+
+      $raw = Path::get($input, $path);
+
+      [$value, $errs] = $field->process(
+        $raw,
+        $level,
+        [
+          'path' => $path,
+          'input' => $input,
+          'level' => $level,
+        ]
+      );
+
+      $values = Path::set($values, $path, $value);
+      $errors = array_merge($errors, $errs);
     }
+
+    return new Result($values, $errors);
+  }
 }
