@@ -4,6 +4,7 @@ namespace RandomX98\InputGuard\Schema;
 use RandomX98\InputGuard\Core\Level;
 use RandomX98\InputGuard\Contract\Sanitizer;
 use RandomX98\InputGuard\Contract\Validator;
+use RandomX98\InputGuard\Schema\RuleSet;
 
 final class Field {
     /** @var array<int,Sanitizer[]> */
@@ -123,5 +124,9 @@ final class Field {
         }
         /** @var Validator[] $rules */
         return array_values($rules);
+    }
+
+    public function use(RuleSet $set): self {
+        return $set->applyTo($this);
     }
 }
