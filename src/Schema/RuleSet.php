@@ -166,6 +166,130 @@ final class RuleSet {
             ->validate(Level::PSYCHOTIC, [Val::maxLen(254)]);
     }
 
+    /**
+     * ParanoidString: maximum security preset for untrusted user input.
+     * Protects against XSS, SQL injection, path traversal, shell injection, and more.
+     */
+    public static function paranoidString(int $maxLen = 1000, int $maxBytes = 4000): self {
+        return self::make()
+            ->sanitize(Level::BASE, [San::trim(), San::normalizeNfkc()])
+            ->sanitize(Level::STRICT, [San::nullIfEmpty()])
+            ->sanitize(Level::PARANOID, [San::stripTags()])
+            ->validate(Level::BASE, [Val::typeString()])
+            ->validate(Level::STRICT, [Val::maxLen($maxLen)])
+            ->validate(Level::PARANOID, [
+                Val::noControlChars(),
+                Val::noZeroWidthChars(),
+                Val::noHtmlTags(),
+                Val::noPathTraversal(),
+                Val::noShellChars(),
+            ])
+            ->validate(Level::PSYCHOTIC, [
+                Val::noSqlPatterns(),
+                Val::printableOnly(),
+                Val::maxBytes($maxBytes),
+            ]);
+    }
+
+    /**
+     * ParanoidUrl: secure URL validation for untrusted input.
+     */
+    public static function paranoidUrl(array $allowedSchemes = ['http', 'https']): self {
+        return self::make()
+            ->sanitize(Level::BASE, [San::trim()])
+            ->sanitize(Level::STRICT, [San::nullIfEmpty()])
+            ->validate(Level::BASE, [Val::typeString()])
+            ->validate(Level::STRICT, [Val::maxLen(2048)])
+            ->validate(Level::PARANOID, [
+                Val::noControlChars(),
+                Val::noZeroWidthChars(),
+                Val::safeUrl($allowedSchemes),
+            ]);
+    }
+
+    /**
+     * ParanoidFilename: secure filename validation for file uploads.
+     */
+    public static function paranoidFilename(int $maxLen = 255): self {
+        return self::make()
+            ->sanitize(Level::BASE, [San::trim()])
+            ->sanitize(Level::STRICT, [San::nullIfEmpty()])
+            ->validate(Level::BASE, [Val::typeString()])
+            ->validate(Level::STRICT, [Val::maxLen($maxLen)])
+            ->validate(Level::PARANOID, [
+                Val::noControlChars(),
+                Val::noPathTraversal(),
+                Val::safeFilename(),
+            ]);
+    }
+
+    /**
+     * AntiSpam: heuristic validation to detect bot/spam submissions.
+     * Use on free-text fields like comments, messages, abuse reports.
+     */
+    public static function antiSpam(int $minWords = 3, int $maxWords = 500): self {
+        return self::make()
+            ->sanitize(Level::BASE, [San::trim()])
+            ->sanitize(Level::STRICT, [San::nullIfEmpty()])
+            ->validate(Level::BASE, [Val::typeString()])
+            ->validate(Level::STRICT, [
+                Val::minWords($minWords),
+                Val::maxWords($maxWords),
+                Val::noRepeatedChars(),
+                Val::noExcessiveUrls(),
+            ])
+            ->validate(Level::PARANOID, [
+                Val::noGibberish(),
+                Val::noAllCaps(),
+                Val::noSuspiciousPattern(),
+            ])
+            ->validate(Level::PSYCHOTIC, [
+                Val::noSpamKeywords(),
+            ]);
+    }
+
+    /**
+     * AntiSpamStrict: stricter anti-spam with security validators combined.
+     * Maximum protection for public-facing forms.
+     */
+    public static function antiSpamStrict(int $minWords = 3, int $maxWords = 500): self {
+        return self::make()
+            ->sanitize(Level::BASE, [San::trim(), San::normalizeNfkc()])
+            ->sanitize(Level::STRICT, [San::nullIfEmpty()])
+            ->sanitize(Level::PARANOID, [San::stripTags()])
+            ->validate(Level::BASE, [Val::typeString()])
+            ->validate(Level::STRICT, [
+                Val::minWords($minWords),
+                Val::maxWords($maxWords),
+                Val::noRepeatedChars(),
+                Val::noExcessiveUrls(),
+            ])
+            ->validate(Level::PARANOID, [
+                Val::noControlChars(),
+                Val::noZeroWidthChars(),
+                Val::noGibberish(),
+                Val::noAllCaps(),
+                Val::noSuspiciousPattern(),
+                Val::noHtmlTags(),
+                Val::noPathTraversal(),
+                Val::noShellChars(),
+            ])
+            ->validate(Level::PSYCHOTIC, [
+                Val::noSpamKeywords(),
+                Val::noSqlPatterns(),
+                Val::printableOnly(),
+            ]);
+    }
+
+    /**
+     * Honeypot: for hidden trap fields that should remain empty.
+     * Bots often fill all fields, catching automated submissions.
+     */
+    public static function honeypot(): self {
+        return self::make()
+            ->validate(Level::BASE, [Val::honeypot()]);
+    }
+
     // --------------------
     // Assertions
     // --------------------

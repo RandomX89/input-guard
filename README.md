@@ -7,6 +7,7 @@ InputGuard is a PHP library for **input sanitization and validation** with:
 - **Nested paths** with dot notation (`user.email`) and **wildcards** (`items.*.name`)
 - **Composable presets** via `Type` and `RuleSet`
 - **Localization-ready errors** (validators emit codes + meta, not user strings)
+- **Security-first design** with protection against XSS, SQL injection, path traversal, shell injection
 
 ## Table of contents
 
@@ -16,10 +17,16 @@ InputGuard is a PHP library for **input sanitization and validation** with:
 - [Quick start](#quick-start)
 - [Types](#types)
 - [RuleSet presets](#ruleset-presets)
+- [Security presets](#security-presets)
+- [Sanitizers reference](#sanitizers-reference)
+- [Validators reference](#validators-reference)
 - [Optional and stopOnFirstError](#optional-and-stoponfirsterror)
 - [Nested paths and wildcards](#nested-paths-and-wildcards)
 - [Arrays: each, arrayOf, minItems/maxItems](#arrays-each-arrayof-minitemsmaxitems)
 - [Objects: object and eachObject](#objects-object-and-eachobject)
+- [Reject unknown fields](#reject-unknown-fields)
+- [Schema-level validators](#schema-level-validators)
+- [Policy versioning](#policy-versioning)
 - [Errors and translations](#errors-and-translations)
 - [Extending](#extending)
 - [Testing](#testing)
@@ -133,6 +140,12 @@ Built-in presets:
 - `RuleSet::username(int $min = 3, int $max = 30)`
 - `RuleSet::slug(int $max = 80)`
 - `RuleSet::email()`
+- `RuleSet::paranoidString(int $maxLen = 1000, int $maxBytes = 4000)` - Maximum security for untrusted input
+- `RuleSet::paranoidUrl(array $allowedSchemes = ['http', 'https'])` - Secure URL validation
+- `RuleSet::paranoidFilename(int $maxLen = 255)` - Secure filename validation
+- `RuleSet::antiSpam(int $minWords = 3, int $maxWords = 500)` - Anti-bot/spam heuristics
+- `RuleSet::antiSpamStrict()` - Anti-spam + security validators combined
+- `RuleSet::honeypot()` - Hidden field trap for bots
 
 Apply a RuleSet to a Field:
 
@@ -153,6 +166,197 @@ Merge RuleSets (order matters: A then B):
 use RandomX98\InputGuard\Schema\RuleSet;
 
 $rules = RuleSet::username()->merge(RuleSet::slug());
+```
+
+## Security presets
+
+For maximum protection against malicious input, use the paranoid presets:
+
+### ParanoidString
+
+Protects against XSS, SQL injection, path traversal, shell injection, and more:
+
+```php
+use RandomX98\InputGuard\Core\Level;
+use RandomX98\InputGuard\Schema\RuleSet;
+use RandomX98\InputGuard\Schema\Schema;
+
+$schema = Schema::make()
+    ->field('comment', RuleSet::paranoidString()->toField());
+
+$result = $schema->process(['comment' => '<script>alert(1)</script>'], Level::PARANOID);
+// Fails with 'no_html_tags' error
+```
+
+**Protection by level:**
+
+| Level | Sanitizers | Validators |
+|-------|------------|------------|
+| BASE | `trim`, `normalizeNfkc` | `typeString` |
+| STRICT | `nullIfEmpty` | `maxLen` |
+| PARANOID | `stripTags` | `noControlChars`, `noZeroWidthChars`, `noHtmlTags`, `noPathTraversal`, `noShellChars` |
+| PSYCHOTIC | - | `noSqlPatterns`, `printableOnly`, `maxBytes` |
+
+### ParanoidUrl
+
+Secure URL validation blocking `javascript:`, `data:`, `vbscript:` schemes:
+
+```php
+$schema = Schema::make()
+    ->field('website', RuleSet::paranoidUrl()->toField());
+
+$result = $schema->process(['website' => 'javascript:alert(1)'], Level::PARANOID);
+// Fails with 'safe_url' error
+```
+
+### ParanoidFilename
+
+Secure filename validation for file uploads:
+
+```php
+$schema = Schema::make()
+    ->field('upload', RuleSet::paranoidFilename()->toField());
+
+$result = $schema->process(['upload' => 'shell.php'], Level::PARANOID);
+// Fails with 'safe_filename' error
+```
+
+## Sanitizers reference
+
+All sanitizers are available via `San::*` factory methods.
+
+| Method | Description |
+|--------|-------------|
+| `San::trim()` | Trims whitespace from both ends |
+| `San::nullIfEmpty()` | Converts empty strings to `null` |
+| `San::lowercase()` | Converts to lowercase |
+| `San::toInt()` | Casts value to integer |
+| `San::normalizeNfkc()` | NFKC Unicode normalization (requires ext-intl, safe no-op otherwise) |
+| `San::stripTags(array $allowed = [])` | Removes HTML tags (optionally allow specific tags) |
+| `San::htmlEntities()` | Encodes HTML special characters |
+
+## Validators reference
+
+All validators are available via `Val::*` factory methods.
+
+### Type validators
+
+| Method | Error code | Description |
+|--------|------------|-------------|
+| `Val::typeString()` | `string` | Value must be a string |
+| `Val::typeInt()` | `int` | Value must be an integer |
+| `Val::typeArray()` | `array` | Value must be an array |
+| `Val::typeObject()` | `object` | Value must be an associative array |
+
+### String validators
+
+| Method | Error code | Description |
+|--------|------------|-------------|
+| `Val::required()` | `required` | Value is required (not null/empty) |
+| `Val::minLen(int $min)` | `min_len` | Minimum string length |
+| `Val::maxLen(int $max)` | `max_len` | Maximum string length |
+| `Val::email()` | `email` | Valid email format |
+| `Val::regex(string $pattern)` | `regex` | Matches regex pattern |
+| `Val::inSet(array $allowed)` | `in_set` | Value in allowed set |
+
+### Numeric validators
+
+| Method | Error code | Description |
+|--------|------------|-------------|
+| `Val::min(int $min)` | `min` | Minimum value |
+| `Val::max(int $max)` | `max` | Maximum value |
+
+### Array validators
+
+| Method | Error code | Description |
+|--------|------------|-------------|
+| `Val::minItems(int $min)` | `min_items` | Minimum array items |
+| `Val::maxItems(int $max)` | `max_items` | Maximum array items |
+
+### Security validators
+
+| Method | Error code | Description |
+|--------|------------|-------------|
+| `Val::noControlChars()` | `no_control_chars` | Blocks control characters (0x00-0x1F, 0x7F) |
+| `Val::noZeroWidthChars()` | `no_zero_width_chars` | Blocks zero-width Unicode characters |
+| `Val::noHtmlTags()` | `no_html_tags` | Blocks HTML tags |
+| `Val::noSqlPatterns()` | `no_sql_patterns` | Blocks SQL injection patterns |
+| `Val::noPathTraversal()` | `no_path_traversal` | Blocks `../`, absolute paths, null bytes |
+| `Val::noShellChars()` | `no_shell_chars` | Blocks shell metacharacters (`;`, `|`, `&`, etc.) |
+| `Val::safeUrl(array $schemes)` | `safe_url` | Blocks dangerous URL schemes |
+| `Val::safeFilename()` | `safe_filename` | Validates safe filename characters and extensions |
+| `Val::printableOnly()` | `printable_only` | Only printable ASCII characters |
+| `Val::maxBytes(int $max)` | `max_bytes` | Maximum byte size (not character count) |
+
+### Anti-spam/bot validators
+
+| Method | Error code | Description |
+|--------|------------|-------------|
+| `Val::noGibberish()` | `gibberish` | Detects keyboard mashing, excessive consonants, low vowel ratio |
+| `Val::noExcessiveUrls(int $max)` | `excessive_urls` | Blocks text with too many URLs |
+| `Val::noRepeatedChars(int $max)` | `repeated_chars` | Blocks excessive character repetition (aaaa, !!!!) |
+| `Val::noSpamKeywords()` | `spam_keywords` | Blocks common spam phrases |
+| `Val::minWords(int $min)` | `min_words` | Minimum word count |
+| `Val::maxWords(int $max)` | `max_words` | Maximum word count |
+| `Val::noAllCaps()` | `all_caps` | Blocks ALL CAPS text (shouting) |
+| `Val::honeypot()` | `honeypot` | Field must be empty (bot trap) |
+| `Val::noSuspiciousPattern()` | `suspicious_pattern` | Detects excessive punctuation, digits, etc. |
+
+## Anti-spam presets
+
+For public-facing forms like comments, contact forms, and abuse reports:
+
+### AntiSpam
+
+Basic heuristic validation to catch bots and spammers:
+
+```php
+use RandomX98\InputGuard\Core\Level;
+use RandomX98\InputGuard\Schema\RuleSet;
+use RandomX98\InputGuard\Schema\Schema;
+use RandomX98\InputGuard\Schema\Type;
+
+$schema = Schema::make()
+    ->field('message', RuleSet::antiSpam()->toField())
+    ->field('email', Type::email());
+
+$result = $schema->process([
+    'message' => 'asdfghjkl qwerty',  // Gibberish!
+    'email' => 'user@example.com',
+], Level::PARANOID);
+
+// Fails with 'gibberish' error
+```
+
+**Protection by level:**
+
+| Level | Validators |
+|-------|------------|
+| STRICT | `minWords`, `maxWords`, `noRepeatedChars`, `noExcessiveUrls` |
+| PARANOID | `noGibberish`, `noAllCaps`, `noSuspiciousPattern` |
+| PSYCHOTIC | `noSpamKeywords` |
+
+### AntiSpamStrict
+
+Combines anti-spam heuristics with security validators:
+
+```php
+$schema = Schema::make()
+    ->field('message', RuleSet::antiSpamStrict()->toField());
+```
+
+### Honeypot
+
+Hidden field trap for bots (add a hidden field that should remain empty):
+
+```php
+$schema = Schema::make()
+    ->field('email', Type::email())
+    ->field('message', RuleSet::antiSpam()->toField())
+    ->field('website', RuleSet::honeypot()->toField());  // Hidden field
+
+// In HTML: <input type="text" name="website" style="display:none">
+// Bots fill all fields, humans leave it empty
 ```
 
 ## Optional and stopOnFirstError
@@ -262,6 +466,24 @@ $schema = Schema::make()
 
 Child schema paths are relative. Errors and values are automatically prefixed, e.g. `user.name`.
 
+**Field overrides**: If you define a field with a path that overlaps with an object schema, the field wins:
+
+```php
+$schema = Schema::make()
+    ->object('user', $childSchema)
+    ->field('user.email', Type::email()->addValidate(Level::STRICT, [Val::required()]));
+// The field 'user.email' overrides the one from $childSchema
+```
+
+To prevent accidental overlaps, use `disallowOverlaps(true)`:
+
+```php
+$schema = Schema::make()
+    ->disallowOverlaps(true)
+    ->object('user', $childSchema)
+    ->field('user.email', Type::email()); // Throws LogicException
+```
+
 ### Collection of objects: `Schema::eachObject()`
 
 ```php
@@ -279,6 +501,98 @@ $schema = Schema::make()
 ```
 
 Errors are prefixed with the concrete index, e.g. `items.1.name`.
+
+## Reject unknown fields
+
+Enable strict mode to reject any input fields not explicitly declared in the schema:
+
+```php
+use RandomX98\InputGuard\Core\Level;
+use RandomX98\InputGuard\Schema\Schema;
+use RandomX98\InputGuard\Schema\Type;
+
+$schema = Schema::make()
+    ->field('email', Type::email())
+    ->field('name', Type::string())
+    ->rejectUnknownFields();
+
+$result = $schema->process([
+    'email' => 'user@example.com',
+    'name' => 'John',
+    'extra' => 'malicious'  // Unknown field!
+], Level::STRICT);
+
+$result->ok(); // false
+$result->errors()[0]->code; // 'unknown_field'
+$result->errors()[0]->path; // 'extra'
+```
+
+This protects against **mass assignment** attacks and ensures only expected data is processed.
+
+Works with nested objects and wildcards:
+
+```php
+$schema = Schema::make()
+    ->field('items.*.name', Type::string())
+    ->rejectUnknownFields();
+
+// Input with 'items.0.extra' will produce error 'unknown_field' at path 'items.0.extra'
+```
+
+## Schema-level validators
+
+For cross-field validation rules (like password confirmation), use schema-level validators:
+
+```php
+use RandomX98\InputGuard\Contract\SchemaValidator;
+use RandomX98\InputGuard\Core\Error;
+use RandomX98\InputGuard\Core\ErrorCode;
+use RandomX98\InputGuard\Core\Level;
+use RandomX98\InputGuard\Schema\Schema;
+use RandomX98\InputGuard\Schema\Type;
+
+class PasswordConfirmValidator implements SchemaValidator {
+    public function validate(array $values, array $context = []): array {
+        $password = $values['password'] ?? null;
+        $confirm = $values['password_confirm'] ?? null;
+
+        if ($password !== $confirm) {
+            return [new Error('password_confirm', ErrorCode::INVALID, null, ['rule' => 'password_mismatch'])];
+        }
+        return [];
+    }
+}
+
+$schema = Schema::make()
+    ->field('password', Type::string())
+    ->field('password_confirm', Type::string())
+    ->rule(new PasswordConfirmValidator());
+
+$result = $schema->process([
+    'password' => 'secret',
+    'password_confirm' => 'different'
+], Level::STRICT);
+
+$result->ok(); // false
+```
+
+Schema validators receive **sanitized values**, so you can rely on clean data.
+
+## Policy versioning
+
+Track which validation policy version was used to process input:
+
+```php
+$schema = Schema::make()
+    ->policyVersion('1.2.3')
+    ->field('email', Type::email());
+
+$result = $schema->process(['email' => 'user@example.com'], Level::STRICT);
+
+$result->meta()['policyVersion']; // '1.2.3'
+```
+
+Useful for auditing and debugging when validation rules change over time.
 
 ## Errors and translations
 
