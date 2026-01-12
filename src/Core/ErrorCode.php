@@ -13,4 +13,9 @@ final class ErrorCode {
     public const REGEX = 'regex';
     public const EMAIL = 'email';
     public const NO_CONTROL_CHARS = 'no_control_chars';
+
+    public const INT = 'int';
+    public const STRING = 'string';
+    public const MIN = 'min';
+    public const MAX = 'max';
 }
