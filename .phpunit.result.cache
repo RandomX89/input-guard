@@ -1,1 +1,1 @@
-{"version":2,"defects":[],"times":{"RandomX98\\InputGuard\\Tests\\SchemaSmokeTest::test_trim_then_required_fails_on_whitespace":0.002}}
+{"version":2,"defects":[],"times":{"RandomX98\\InputGuard\\Tests\\SchemaSmokeTest::test_trim_then_required_fails_on_whitespace":0,"RandomX98\\InputGuard\\Tests\\FactoriesAndImmutabilityTest::test_field_is_immutable":0.002,"RandomX98\\InputGuard\\Tests\\FactoriesAndImmutabilityTest::test_no_control_chars_validator":0}}

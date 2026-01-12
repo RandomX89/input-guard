@@ -7,22 +7,32 @@ use RandomX98\InputGuard\Contract\Validator;
 
 final class Field {
     /** @var array<int,Sanitizer[]> */
-    private array $sanitizersByLevel = [];
+    private array $sanitizersByLevel;
     /** @var array<int,Validator[]> */
-    private array $validatorsByLevel = [];
+    private array $validatorsByLevel;
+
+    public function __construct(
+        array $sanitizersByLevel = [],
+        array $validatorsByLevel = []
+    ) {
+        $this->sanitizersByLevel = $sanitizersByLevel;
+        $this->validatorsByLevel = $validatorsByLevel;
+    }
 
     /** @param Sanitizer[] $rules */
     public function sanitize(Level $level, array $rules): self {
-        $this->sanitizersByLevel[$level->value] = $rules;
-        ksort($this->sanitizersByLevel);
-        return $this;
+        $san = $this->sanitizersByLevel;
+        $san[$level->value] = $rules;
+        ksort($san);
+        return new self($san, $this->validatorsByLevel);
     }
 
     /** @param Validator[] $rules */
     public function validate(Level $level, array $rules): self {
-        $this->validatorsByLevel[$level->value] = $rules;
-        ksort($this->validatorsByLevel);
-        return $this;
+        $val = $this->validatorsByLevel;
+        $val[$level->value] = $rules;
+        ksort($val);
+        return new self($this->sanitizersByLevel, $val);
     }
 
     /** @return array{0:mixed,1:array} */
