@@ -11,12 +11,27 @@ final class Field {
     /** @var array<int,Validator[]> */
     private array $validatorsByLevel;
 
+    private bool $isOptional;
+    private bool $stopOnFirstError;
+
     public function __construct(
         array $sanitizersByLevel = [],
-        array $validatorsByLevel = []
+        array $validatorsByLevel = [],
+        bool $isOptional = false,
+        bool $stopOnFirstError = false
     ) {
         $this->sanitizersByLevel = $sanitizersByLevel;
         $this->validatorsByLevel = $validatorsByLevel;
+        $this->isOptional = $isOptional;
+        $this->stopOnFirstError = $stopOnFirstError;
+    }
+
+    public function optional(bool $enabled = true): self {
+        return new self($this->sanitizersByLevel, $this->validatorsByLevel, $enabled, $this->stopOnFirstError);
+    }
+
+    public function stopOnFirstError(bool $enabled = true): self {
+        return new self($this->sanitizersByLevel, $this->validatorsByLevel, $this->isOptional, $enabled);
     }
 
     /** SET: replaces rules for that level */
@@ -24,7 +39,7 @@ final class Field {
         $san = $this->sanitizersByLevel;
         $san[$level->value] = $this->assertSanitizers($rules);
         ksort($san);
-        return new self($san, $this->validatorsByLevel);
+        return new self($san, $this->validatorsByLevel, $this->isOptional, $this->stopOnFirstError);
     }
 
     /** SET: replaces rules for that level */
@@ -32,7 +47,7 @@ final class Field {
         $val = $this->validatorsByLevel;
         $val[$level->value] = $this->assertValidators($rules);
         ksort($val);
-        return new self($this->sanitizersByLevel, $val);
+        return new self($this->sanitizersByLevel, $val, $this->isOptional, $this->stopOnFirstError);
     }
 
     /** APPEND: adds rules after existing ones for that level */
@@ -41,7 +56,7 @@ final class Field {
         $existing = $san[$level->value] ?? [];
         $san[$level->value] = array_values(array_merge($existing, $this->assertSanitizers($rules)));
         ksort($san);
-        return new self($san, $this->validatorsByLevel);
+        return new self($san, $this->validatorsByLevel, $this->isOptional, $this->stopOnFirstError);
     }
 
     /** APPEND: adds rules after existing ones for that level */
@@ -50,11 +65,12 @@ final class Field {
         $existing = $val[$level->value] ?? [];
         $val[$level->value] = array_values(array_merge($existing, $this->assertValidators($rules)));
         ksort($val);
-        return new self($this->sanitizersByLevel, $val);
+        return new self($this->sanitizersByLevel, $val, $this->isOptional, $this->stopOnFirstError);
     }
 
     /** @return array{0:mixed,1:array} */
     public function process(mixed $value, Level $level, array $context): array {
+        // 1) sanitize
         foreach ($this->sanitizersByLevel as $lvl => $rules) {
             if ($lvl <= $level->value) {
                 foreach ($rules as $rule) {
@@ -63,11 +79,23 @@ final class Field {
             }
         }
 
+        // 2) optional short-circuit (after sanitization)
+        if ($this->isOptional && ($value === null || (is_string($value) && $value === ''))) {
+            return [$value, []];
+        }
+
+        // 3) validate
         $errors = [];
         foreach ($this->validatorsByLevel as $lvl => $rules) {
             if ($lvl <= $level->value) {
                 foreach ($rules as $rule) {
-                    $errors = array_merge($errors, $rule->validate($value, $context));
+                    $newErrors = $rule->validate($value, $context);
+                    if ($newErrors !== []) {
+                        $errors = array_merge($errors, $newErrors);
+                        if ($this->stopOnFirstError) {
+                            return [$value, $errors];
+                        }
+                    }
                 }
             }
         }
