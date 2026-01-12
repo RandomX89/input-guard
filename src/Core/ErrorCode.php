@@ -21,4 +21,5 @@ final class ErrorCode {
     public const ARRAY = 'array';
     public const MIN_ITEMS = 'min_items';
     public const MAX_ITEMS = 'max_items';
+    public const OBJECT = 'object';
 }

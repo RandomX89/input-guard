@@ -38,4 +38,11 @@ final class Type {
     public static function arrayOf(Field $elementField): ArrayOf {
         return new ArrayOf(self::array(), $elementField);
     }
+
+    public static function object(): Field {
+        return (new Field())
+            ->validate(Level::BASE, [
+                Val::typeObject()
+            ]);
+    }
 }

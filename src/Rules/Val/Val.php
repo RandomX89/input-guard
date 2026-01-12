@@ -17,4 +17,5 @@ final class Val {
     public static function typeArray(): TypeArrayValidator { return new TypeArrayValidator(); }
     public static function minItems(int $min): MinItemsValidator { return new MinItemsValidator($min); }
     public static function maxItems(int $max): MaxItemsValidator { return new MaxItemsValidator($max); }
+    public static function typeObject(): TypeObjectValidator { return new TypeObjectValidator(); }
 }
