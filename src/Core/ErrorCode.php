@@ -22,4 +22,6 @@ final class ErrorCode {
     public const MIN_ITEMS = 'min_items';
     public const MAX_ITEMS = 'max_items';
     public const OBJECT = 'object';
+    public const UNKNOWN_FIELD = 'unknown_field';
+    public const NO_ZERO_WIDTH_CHARS = 'no_zero_width_chars';
 }

@@ -7,6 +7,13 @@ use RandomX98\InputGuard\Core\ErrorCode;
 
 final class RequiredValidator implements Validator {
     public function validate(mixed $value, array $context = []): array {
+        $present = $context['present'] ?? true;
+
+
+        if (!$present) {
+            return [new Error($context['path'] ?? '', ErrorCode::REQUIRED, null)];
+        }
+
         if ($value === null || (is_string($value) && $value === '')) {
             return [
                 new Error(

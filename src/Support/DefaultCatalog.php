@@ -19,9 +19,11 @@ final class DefaultCatalog {
                 ErrorCode::REGEX => fn(Error $e) => 'Invalid format',
                 ErrorCode::IN_SET => fn(Error $e) => 'Value is not allowed',
                 ErrorCode::NO_CONTROL_CHARS => fn(Error $e) => 'Control characters are not allowed',
+                ErrorCode::NO_ZERO_WIDTH_CHARS => fn(Error $e) => 'Zero-width characters are not allowed',
                 ErrorCode::ARRAY => fn(Error $e) => 'Expected an array',
                 ErrorCode::MIN_ITEMS => fn(Error $e) => 'Array is too short',
                 ErrorCode::MAX_ITEMS => fn(Error $e) => 'Array is too long',
+                ErrorCode::UNKNOWN_FIELD => fn(Error $e) => 'Unknown field',
             ],
             'it' => [
                 ErrorCode::REQUIRED => fn(Error $e) => 'Campo obbligatorio',
@@ -35,9 +37,11 @@ final class DefaultCatalog {
                 ErrorCode::REGEX => fn(Error $e) => 'Formato non valido',
                 ErrorCode::IN_SET => fn(Error $e) => 'Valore non consentito',
                 ErrorCode::NO_CONTROL_CHARS => fn(Error $e) => 'Caratteri di controllo non consentiti',
+                ErrorCode::NO_ZERO_WIDTH_CHARS => fn(Error $e) => 'Caratteri a larghezza zero non consentiti',
                 ErrorCode::ARRAY => fn(Error $e) => 'Deve essere un array',
                 ErrorCode::MIN_ITEMS => fn(Error $e) => 'Array troppo corto',
                 ErrorCode::MAX_ITEMS => fn(Error $e) => 'Array troppo lungo',
+                ErrorCode::UNKNOWN_FIELD => fn(Error $e) => 'Campo non consentito',
             ],
         ];
 

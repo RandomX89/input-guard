@@ -26,6 +26,25 @@ final class WildcardPathsTest extends TestCase {
     $this->assertSame('Bob', $r->values()['items'][1]['name']);
   }
 
+  public function test_wildcard_required_fails_when_key_is_missing(): void {
+    $schema = Schema::make()
+      ->field('items.*.name', Type::string()->addValidate(Level::STRICT, [Val::required()])->stopOnFirstError());
+
+    $input = [
+      'items' => [
+        ['name' => 'ok'],
+        [],
+        ['name' => 'yo'],
+      ]
+    ];
+
+    $r = $schema->process($input, Level::STRICT);
+
+    $this->assertFalse($r->ok());
+    $this->assertSame('items.1.name', $r->errors()[0]->path);
+    $this->assertSame('required', $r->errors()[0]->code);
+  }
+
   public function test_wildcard_collects_indexed_errors(): void {
     $schema = Schema::make()
       ->field('items.*.name', Type::string()->addValidate(Level::STRICT, [Val::required()])->stopOnFirstError());

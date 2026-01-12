@@ -5,8 +5,9 @@ final class Result {
     /** @param array<string,mixed> $values */
     /** @param Error[] $errors */
     public function __construct(
-        private readonly array $values,
-        private readonly array $errors = []
+        private array $values,
+        private array $errors = [],
+        private array $meta = []
     ) {}
 
     public function ok(): bool { return $this->errors === []; }
@@ -16,4 +17,7 @@ final class Result {
 
     /** @return Error[] */
     public function errors(): array { return $this->errors; }
+
+    /** @return array<string,mixed> */
+    public function meta(): array { return $this->meta; }
 }

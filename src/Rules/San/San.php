@@ -6,4 +6,5 @@ final class San {
     public static function nullIfEmpty(): NullIfEmptySanitizer { return new NullIfEmptySanitizer(); }
     public static function lowercase(): LowercaseSanitizer { return new LowercaseSanitizer(); }
     public static function toInt(): ToIntSanitizer { return new ToIntSanitizer(); }
+    public static function normalizeNfkc(): NormalizeNfkcSanitizer { return new NormalizeNfkcSanitizer(); }
 }

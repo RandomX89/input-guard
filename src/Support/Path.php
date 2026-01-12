@@ -13,11 +13,7 @@ final class Path {
     return str_contains($path, '*');
   }
 
-  /**
-   * Expand a wildcard path (e.g. "items.*.name") into concrete paths found in $input.
-   *
-   * @return array<int,array{path:string,value:mixed}>
-   */
+  /** @return array<int,array{path:string,value:mixed,present:bool}> */
   public static function expand(array $input, string $path): array {
     $segs = self::segments($path);
     if ($segs === []) return [];
@@ -30,13 +26,14 @@ final class Path {
   /**
    * @param array<int,string> $segs
    * @param array<int,string> $built
-   * @param array<int,array{path:string,value:mixed}> $out
+   * @param array<int,array{path:string,value:mixed,present:bool}> $out
    */
   private static function expandRecursive(mixed $cur, array $segs, array $built, array &$out): void {
     if ($segs === []) {
       $out[] = [
         'path' => implode('.', $built),
-        'value' => $cur
+        'value' => $cur,
+        'present' => true
       ];
       return;
     }
@@ -56,11 +53,41 @@ final class Path {
     }
 
     if (!is_array($cur) || !array_key_exists($seg, $cur)) {
+      // Missing segment: allow validators (e.g. required) to run on leaf nodes.
+      // If the remaining path contains a wildcard, we cannot build a concrete path.
+      if (in_array('*', $segs, true)) {
+        return;
+      }
+
+      $missingPath = array_merge($built, [$seg], $segs);
+      $out[] = [
+        'path' => implode('.', $missingPath),
+        'value' => null,
+        'present' => false
+      ];
       return;
     }
 
     $built[] = $seg;
     self::expandRecursive($cur[$seg], $segs, $built, $out);
+  }
+
+  /** @return array{value:mixed,present:bool} */
+  public static function getWithPresence(array $input, string $path): array {
+    $segments = self::segments($path);
+    if ($segments === []) {
+      return ['value' => $input, 'present' => true];
+    }
+
+    $cur = $input;
+    foreach ($segments as $seg) {
+      if (!is_array($cur) || !array_key_exists($seg, $cur)) {
+        return ['value' => null, 'present' => false];
+      }
+      $cur = $cur[$seg];
+    }
+
+    return ['value' => $cur, 'present' => true];
   }
 
   public static function get(array $input, string $path): mixed {
