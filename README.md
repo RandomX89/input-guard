@@ -85,7 +85,12 @@ $schema = Schema::make()
   ->field('email', Type::email()->addValidate(Level::STRICT, [Val::required()]))
   ->field('age', Type::int()->addValidate(Level::STRICT, [Val::min(18)]));
 
-$result = $schema->process($_POST, Level::STRICT);
+$input = [
+  'email' => 'user@example.com',
+  'age' => 21,
+];
+
+$result = $schema->process($input, Level::STRICT);
 
 if (!$result->ok()) {
   // $result->errors() contains Error objects
