@@ -1,28 +1,15 @@
 # InputGuard
 
-**InputGuard** is a **personal, opinionated PHP library** for **input sanitization and validation**, developed primarily for internal use and experimentation.
+A PHP library for input sanitization and validation with configurable severity levels.
 
-It focuses on **clarity, determinism, and security-oriented design**, rather than being a drop-in replacement for full-featured validation frameworks.
+## Features
 
-The library provides:
-
-- **Deterministic pipelines**  
-  Sanitization is always applied before validation, in a predictable and explicit order.
-
-- **Configurable severity levels**  
-  (`BASE`, `STRICT`, `PARANOID`, `PSYCHOTIC`) to progressively harden validation rules depending on context and risk tolerance.
-
-- **Nested paths with dot notation**  
-  (`user.email`) and **wildcards** (`items.*.name`) for complex and deeply structured inputs.
-
-- **Composable presets** via `Type` and `RuleSet`  
-  Designed to express intent clearly and reduce repetition in validation logic.
-
-- **Localization-ready error handling**  
-  Validators emit stable error codes and metadata only — user-facing messages are resolved externally.
-
-- **Security-first mindset**  
-  Includes defensive measures against common classes of unsafe input (such as XSS vectors, control characters, unsafe paths, and command injection patterns), while remaining explicit and opt-in.
+- **Sanitize-then-validate pipeline** — sanitization runs before validation, in a predictable order
+- **Severity levels** — `BASE`, `STRICT`, `PARANOID`, `PSYCHOTIC` to adjust strictness per context
+- **Nested paths** — dot notation (`user.email`) and wildcards (`items.*.name`)
+- **Composable presets** — `Type` and `RuleSet` for reusable validation logic
+- **Structured errors** — stable error codes with metadata, messages resolved via translator
+- **Security validators** — optional protection against XSS, SQL injection, path traversal, shell injection
 
 ## Table of contents
 
@@ -48,30 +35,15 @@ The library provides:
 
 ## Installation
 
-This package is a private library. Add it as a VCS repository and require it.
-
-```json
-{
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "git@github.com:RandomX98/input-guard.git"
-    }
-  ],
-  "require": {
-    "randomx98/input-guard": "dev-main"
-  }
-}
-```
-
 ```bash
-composer install
+composer require randomx98/input-guard
 ```
 
-Requirements:
+**Requirements:**
 
-- PHP `>= 8.1`
-- `ext-mbstring`
+- PHP >= 8.1
+- ext-mbstring
+- ext-intl (optional, for Unicode normalization)
 
 ## Core concepts
 
@@ -185,11 +157,11 @@ $rules = RuleSet::username()->merge(RuleSet::slug());
 
 ## Security presets
 
-For maximum protection against malicious input, use the paranoid presets:
+These presets add extra validation rules to block common attack patterns. They are opt-in and may be too strict for some use cases — test with your actual data.
 
 ### ParanoidString
 
-Protects against XSS, SQL injection, path traversal, shell injection, and more:
+Blocks HTML tags, control characters, path traversal patterns, and shell metacharacters:
 
 ```php
 use InputGuard\Core\Level;
@@ -203,18 +175,20 @@ $result = $schema->process(['comment' => '<script>alert(1)</script>'], Level::PA
 // Fails with 'no_html_tags' error
 ```
 
-**Protection by level:**
+**Rules by level:**
 
 | Level | Sanitizers | Validators |
 |-------|------------|------------|
 | BASE | `trim`, `normalizeNfkc` | `typeString` |
 | STRICT | `nullIfEmpty` | `maxLen` |
-| PARANOID | `stripTags` | `noControlChars`, `noZeroWidthChars`, `noHtmlTags`, `noPathTraversal`, `noShellChars` |
-| PSYCHOTIC | - | `noSqlPatterns`, `printableOnly`, `maxBytes` |
+| PARANOID | — | `noControlChars`, `noZeroWidthChars`, `noHtmlTags`, `noPathTraversal`, `noShellChars` |
+| PSYCHOTIC | — | `noSqlPatterns`, `printableOnly`, `maxBytes` |
+
+> **Note:** `paranoidString` blocks characters like `!`, `$`, `@` which appear in normal text. For user comments or messages, consider `antiSpam` instead.
 
 ### ParanoidUrl
 
-Secure URL validation blocking `javascript:`, `data:`, `vbscript:` schemes:
+Blocks `javascript:`, `data:`, `vbscript:`, `file:` URL schemes:
 
 ```php
 $schema = Schema::make()
@@ -226,7 +200,7 @@ $result = $schema->process(['website' => 'javascript:alert(1)'], Level::PARANOID
 
 ### ParanoidFilename
 
-Secure filename validation for file uploads:
+Validates filenames: alphanumeric characters, blocks dangerous extensions (`.php`, `.exe`, etc.):
 
 ```php
 $schema = Schema::make()
@@ -319,11 +293,11 @@ All validators are available via `Val::*` factory methods.
 
 ## Anti-spam presets
 
-For public-facing forms like comments, contact forms, and abuse reports:
+Heuristic validators for public forms. These use pattern matching and may produce false positives — adjust thresholds as needed.
 
 ### AntiSpam
 
-Basic heuristic validation to catch bots and spammers:
+Basic checks for gibberish, repeated characters, and excessive URLs:
 
 ```php
 use InputGuard\Core\Level;
@@ -343,7 +317,7 @@ $result = $schema->process([
 // Fails with 'gibberish' error
 ```
 
-**Protection by level:**
+**Rules by level:**
 
 | Level | Validators |
 |-------|------------|
@@ -353,7 +327,7 @@ $result = $schema->process([
 
 ### AntiSpamStrict
 
-Combines anti-spam heuristics with security validators:
+AntiSpam + security validators combined:
 
 ```php
 $schema = Schema::make()
@@ -362,7 +336,7 @@ $schema = Schema::make()
 
 ### Honeypot
 
-Hidden field trap for bots (add a hidden field that should remain empty):
+Hidden field that should remain empty. Bots often fill all fields:
 
 ```php
 $schema = Schema::make()
@@ -679,3 +653,7 @@ A Type is simply a method that returns a `Field` preset.
 ```bash
 ./vendor/bin/phpunit
 ```
+
+## License
+
+MIT License. See [LICENSE](LICENSE) for details.
