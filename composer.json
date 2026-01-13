@@ -9,12 +9,12 @@
   },
   "autoload": {
     "psr-4": {
-      "RandomX98\\InputGuard\\": "src/"
+      "InputGuard\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "RandomX98\\InputGuard\\Tests\\": "tests/"
+      "InputGuard\\Tests\\": "tests/"
     }
   },
   "require-dev": {

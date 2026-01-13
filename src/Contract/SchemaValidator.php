@@ -1,7 +1,7 @@
 <?php
-namespace RandomX98\InputGuard\Contract;
+namespace InputGuard\Contract;
 
-use RandomX98\InputGuard\Core\Error;
+use InputGuard\Core\Error;
 
 interface SchemaValidator {
   /** @return Error[] */

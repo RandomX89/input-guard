@@ -1,5 +1,5 @@
 <?php
-namespace RandomX98\InputGuard\Core;
+namespace InputGuard\Core;
 
 enum Level: int {
     case BASE = 10;

@@ -1,5 +1,5 @@
 <?php
-namespace RandomX98\InputGuard\Rules\Val;
+namespace InputGuard\Rules\Val;
 
 final class Val {
     public static function required(): RequiredValidator { return new RequiredValidator(); }

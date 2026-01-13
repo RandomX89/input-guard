@@ -1,5 +1,5 @@
 <?php
-namespace RandomX98\InputGuard\Core;
+namespace InputGuard\Core;
 
 final class Result {
     /** @param array<string,mixed> $values */

@@ -1,7 +1,7 @@
 <?php
-namespace RandomX98\InputGuard\Rules\San;
+namespace InputGuard\Rules\San;
 
-use RandomX98\InputGuard\Contract\Sanitizer;
+use InputGuard\Contract\Sanitizer;
 
 final class StripTagsSanitizer implements Sanitizer {
     /** @param string[] $allowedTags */

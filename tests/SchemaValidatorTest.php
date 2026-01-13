@@ -1,14 +1,14 @@
 <?php
-namespace RandomX98\InputGuard\Tests;
+namespace InputGuard\Tests;
 
 use PHPUnit\Framework\TestCase;
-use RandomX98\InputGuard\Contract\SchemaValidator;
-use RandomX98\InputGuard\Core\Error;
-use RandomX98\InputGuard\Core\ErrorCode;
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Schema\Schema;
-use RandomX98\InputGuard\Schema\Type;
-use RandomX98\InputGuard\Rules\Val\Val;
+use InputGuard\Contract\SchemaValidator;
+use InputGuard\Core\Error;
+use InputGuard\Core\ErrorCode;
+use InputGuard\Core\Level;
+use InputGuard\Schema\Schema;
+use InputGuard\Schema\Type;
+use InputGuard\Rules\Val\Val;
 
 final class SchemaValidatorTest extends TestCase {
   public function test_schema_rule_can_validate_cross_fields(): void {

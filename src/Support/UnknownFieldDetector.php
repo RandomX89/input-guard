@@ -1,8 +1,8 @@
 <?php
-namespace RandomX98\InputGuard\Support;
+namespace InputGuard\Support;
 
-use RandomX98\InputGuard\Core\Error;
-use RandomX98\InputGuard\Core\ErrorCode;
+use InputGuard\Core\Error;
+use InputGuard\Core\ErrorCode;
 
 final class UnknownFieldDetector {
   /** @return Error[] */

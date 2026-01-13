@@ -8,13 +8,13 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Rules\Val\Val;
-use RandomX98\InputGuard\Schema\RuleSet;
-use RandomX98\InputGuard\Schema\Schema;
-use RandomX98\InputGuard\Schema\Type;
-use RandomX98\InputGuard\Support\DefaultCatalog;
-use RandomX98\InputGuard\Support\PresentableErrors;
+use InputGuard\Core\Level;
+use InputGuard\Rules\Val\Val;
+use InputGuard\Schema\RuleSet;
+use InputGuard\Schema\Schema;
+use InputGuard\Schema\Type;
+use InputGuard\Support\DefaultCatalog;
+use InputGuard\Support\PresentableErrors;
 
 $schema = Schema::make()
     ->field('reporter_email', Type::email()->addValidate(Level::STRICT, [Val::required()]))

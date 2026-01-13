@@ -1,8 +1,8 @@
 <?php
-namespace RandomX98\InputGuard\Support;
+namespace InputGuard\Support;
 
-use RandomX98\InputGuard\Contract\Translator;
-use RandomX98\InputGuard\Core\Error;
+use InputGuard\Contract\Translator;
+use InputGuard\Core\Error;
 
 final class MessageCatalog implements Translator {
     /**

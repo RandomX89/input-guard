@@ -1,8 +1,8 @@
 <?php
-namespace RandomX98\InputGuard\Schema;
+namespace InputGuard\Schema;
 
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Rules\Val\Val;
+use InputGuard\Core\Level;
+use InputGuard\Rules\Val\Val;
 
 final class ArrayOf {
   public function __construct(

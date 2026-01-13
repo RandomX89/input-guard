@@ -1,12 +1,12 @@
 <?php
-namespace RandomX98\InputGuard\Tests;
+namespace InputGuard\Tests;
 
 use PHPUnit\Framework\TestCase;
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Schema\Schema;
-use RandomX98\InputGuard\Schema\Field;
-use RandomX98\InputGuard\Rules\San\TrimSanitizer;
-use RandomX98\InputGuard\Rules\Val\RequiredValidator;
+use InputGuard\Core\Level;
+use InputGuard\Schema\Schema;
+use InputGuard\Schema\Field;
+use InputGuard\Rules\San\TrimSanitizer;
+use InputGuard\Rules\Val\RequiredValidator;
 
 final class SchemaSmokeTest extends TestCase {
     public function test_trim_then_required_fails_on_whitespace(): void {

@@ -1,11 +1,11 @@
 <?php
-namespace RandomX98\InputGuard\Tests;
+namespace InputGuard\Tests;
 
 use PHPUnit\Framework\TestCase;
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Rules\Val\Val;
-use RandomX98\InputGuard\Schema\RuleSet;
-use RandomX98\InputGuard\Schema\Schema;
+use InputGuard\Core\Level;
+use InputGuard\Rules\Val\Val;
+use InputGuard\Schema\RuleSet;
+use InputGuard\Schema\Schema;
 
 final class AntiSpamValidatorsTest extends TestCase {
     public function test_no_gibberish_detects_keyboard_mashing(): void {

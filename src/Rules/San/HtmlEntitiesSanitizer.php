@@ -1,7 +1,7 @@
 <?php
-namespace RandomX98\InputGuard\Rules\San;
+namespace InputGuard\Rules\San;
 
-use RandomX98\InputGuard\Contract\Sanitizer;
+use InputGuard\Contract\Sanitizer;
 
 final class HtmlEntitiesSanitizer implements Sanitizer {
     public function __construct(

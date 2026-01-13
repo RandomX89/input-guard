@@ -89,10 +89,10 @@ Levels are cumulative: requesting `PSYCHOTIC` applies `BASE`, `STRICT`, `PARANOI
 ## Quick start
 
 ```php
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Rules\Val\Val;
-use RandomX98\InputGuard\Schema\Schema;
-use RandomX98\InputGuard\Schema\Type;
+use InputGuard\Core\Level;
+use InputGuard\Rules\Val\Val;
+use InputGuard\Schema\Schema;
+use InputGuard\Schema\Type;
 
 $schema = Schema::make()
   ->field('email', Type::email()->addValidate(Level::STRICT, [Val::required()]))
@@ -123,9 +123,9 @@ Available:
 Example:
 
 ```php
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Rules\Val\Val;
-use RandomX98\InputGuard\Schema\Type;
+use InputGuard\Core\Level;
+use InputGuard\Rules\Val\Val;
+use InputGuard\Schema\Type;
 
 $field = Type::string()
   ->addValidate(Level::STRICT, [Val::minLen(3)]);
@@ -150,10 +150,10 @@ Built-in presets:
 Apply a RuleSet to a Field:
 
 ```php
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Rules\Val\Val;
-use RandomX98\InputGuard\Schema\RuleSet;
-use RandomX98\InputGuard\Schema\Type;
+use InputGuard\Core\Level;
+use InputGuard\Rules\Val\Val;
+use InputGuard\Schema\RuleSet;
+use InputGuard\Schema\Type;
 
 $field = Type::string()
   ->use(RuleSet::username())
@@ -163,7 +163,7 @@ $field = Type::string()
 Merge RuleSets (order matters: A then B):
 
 ```php
-use RandomX98\InputGuard\Schema\RuleSet;
+use InputGuard\Schema\RuleSet;
 
 $rules = RuleSet::username()->merge(RuleSet::slug());
 ```
@@ -177,9 +177,9 @@ For maximum protection against malicious input, use the paranoid presets:
 Protects against XSS, SQL injection, path traversal, shell injection, and more:
 
 ```php
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Schema\RuleSet;
-use RandomX98\InputGuard\Schema\Schema;
+use InputGuard\Core\Level;
+use InputGuard\Schema\RuleSet;
+use InputGuard\Schema\Schema;
 
 $schema = Schema::make()
     ->field('comment', RuleSet::paranoidString()->toField());
@@ -311,10 +311,10 @@ For public-facing forms like comments, contact forms, and abuse reports:
 Basic heuristic validation to catch bots and spammers:
 
 ```php
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Schema\RuleSet;
-use RandomX98\InputGuard\Schema\Schema;
-use RandomX98\InputGuard\Schema\Type;
+use InputGuard\Core\Level;
+use InputGuard\Schema\RuleSet;
+use InputGuard\Schema\Schema;
+use InputGuard\Schema\Type;
 
 $schema = Schema::make()
     ->field('message', RuleSet::antiSpam()->toField())
@@ -369,9 +369,9 @@ $schema = Schema::make()
   Stops validation on the first failing rule for that field.
 
 ```php
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Rules\Val\Val;
-use RandomX98\InputGuard\Schema\Type;
+use InputGuard\Core\Level;
+use InputGuard\Rules\Val\Val;
+use InputGuard\Schema\Type;
 
 $field = Type::string()
   ->optional()
@@ -402,10 +402,10 @@ When a wildcard matches multiple items, errors always contain a **concrete path*
 ### Validate an array itself
 
 ```php
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Rules\Val\Val;
-use RandomX98\InputGuard\Schema\Schema;
-use RandomX98\InputGuard\Schema\Type;
+use InputGuard\Core\Level;
+use InputGuard\Rules\Val\Val;
+use InputGuard\Schema\Schema;
+use InputGuard\Schema\Type;
 
 $schema = Schema::make()
   ->field('tags', Type::array()->addValidate(Level::STRICT, [Val::minItems(2)]));
@@ -414,10 +414,10 @@ $schema = Schema::make()
 ### Apply a Field to each element: `Schema::each()`
 
 ```php
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Rules\Val\Val;
-use RandomX98\InputGuard\Schema\Schema;
-use RandomX98\InputGuard\Schema\Type;
+use InputGuard\Core\Level;
+use InputGuard\Rules\Val\Val;
+use InputGuard\Schema\Schema;
+use InputGuard\Schema\Type;
 
 $schema = Schema::make()
   ->each('tags', Type::string()->addValidate(Level::STRICT, [Val::minLen(2)]));
@@ -428,10 +428,10 @@ $schema = Schema::make()
 `Type::arrayOf()` returns an `ArrayOf` helper that can be applied to a `Schema`.
 
 ```php
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Rules\Val\Val;
-use RandomX98\InputGuard\Schema\Schema;
-use RandomX98\InputGuard\Schema\Type;
+use InputGuard\Core\Level;
+use InputGuard\Rules\Val\Val;
+use InputGuard\Schema\Schema;
+use InputGuard\Schema\Type;
 
 $schema = Schema::make();
 
@@ -450,10 +450,10 @@ This applies:
 ### Nested object schema: `Schema::object()`
 
 ```php
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Rules\Val\Val;
-use RandomX98\InputGuard\Schema\Schema;
-use RandomX98\InputGuard\Schema\Type;
+use InputGuard\Core\Level;
+use InputGuard\Rules\Val\Val;
+use InputGuard\Schema\Schema;
+use InputGuard\Schema\Type;
 
 $userSchema = Schema::make()
   ->field('email', Type::email()->addValidate(Level::STRICT, [Val::required()]))
@@ -487,10 +487,10 @@ $schema = Schema::make()
 ### Collection of objects: `Schema::eachObject()`
 
 ```php
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Rules\Val\Val;
-use RandomX98\InputGuard\Schema\Schema;
-use RandomX98\InputGuard\Schema\Type;
+use InputGuard\Core\Level;
+use InputGuard\Rules\Val\Val;
+use InputGuard\Schema\Schema;
+use InputGuard\Schema\Type;
 
 $itemSchema = Schema::make()
   ->field('name', Type::string()->addValidate(Level::STRICT, [Val::required()]))
@@ -507,9 +507,9 @@ Errors are prefixed with the concrete index, e.g. `items.1.name`.
 Enable strict mode to reject any input fields not explicitly declared in the schema:
 
 ```php
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Schema\Schema;
-use RandomX98\InputGuard\Schema\Type;
+use InputGuard\Core\Level;
+use InputGuard\Schema\Schema;
+use InputGuard\Schema\Type;
 
 $schema = Schema::make()
     ->field('email', Type::email())
@@ -544,12 +544,12 @@ $schema = Schema::make()
 For cross-field validation rules (like password confirmation), use schema-level validators:
 
 ```php
-use RandomX98\InputGuard\Contract\SchemaValidator;
-use RandomX98\InputGuard\Core\Error;
-use RandomX98\InputGuard\Core\ErrorCode;
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Schema\Schema;
-use RandomX98\InputGuard\Schema\Type;
+use InputGuard\Contract\SchemaValidator;
+use InputGuard\Core\Error;
+use InputGuard\Core\ErrorCode;
+use InputGuard\Core\Level;
+use InputGuard\Schema\Schema;
+use InputGuard\Schema\Type;
 
 class PasswordConfirmValidator implements SchemaValidator {
     public function validate(array $values, array $context = []): array {
@@ -605,8 +605,8 @@ Validators should emit structured errors:
 ### Default catalog
 
 ```php
-use RandomX98\InputGuard\Support\DefaultCatalog;
-use RandomX98\InputGuard\Support\PresentableErrors;
+use InputGuard\Support\DefaultCatalog;
+use InputGuard\Support\PresentableErrors;
 
 $translator = DefaultCatalog::build();
 
@@ -620,7 +620,7 @@ $presentable = PresentableErrors::format(
 ### Custom catalog
 
 ```php
-use RandomX98\InputGuard\Support\MessageCatalog;
+use InputGuard\Support\MessageCatalog;
 
 $translator = new MessageCatalog([
   'en' => [
@@ -634,21 +634,21 @@ $translator = new MessageCatalog([
 
 ### Add a validator
 
-- Implement `RandomX98\InputGuard\Contract\Validator`
-- Return an array of `RandomX98\InputGuard\Core\Error`
+- Implement `InputGuard\Contract\Validator`
+- Return an array of `InputGuard\Core\Error`
 - Emit `ErrorCode + meta` and keep `message` as `null`
-- Expose it via `RandomX98\InputGuard\Rules\Val\Val` (factory methods)
+- Expose it via `InputGuard\Rules\Val\Val` (factory methods)
 
 ### Add a sanitizer
 
-- Implement `RandomX98\InputGuard\Contract\Sanitizer`
-- Expose it via `RandomX98\InputGuard\Rules\San\San`
+- Implement `InputGuard\Contract\Sanitizer`
+- Expose it via `InputGuard\Rules\San\San`
 
 ### Add a RuleSet
 
 ```php
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Schema\RuleSet;
+use InputGuard\Core\Level;
+use InputGuard\Schema\RuleSet;
 
 $set = RuleSet::make()
   ->sanitize(Level::BASE, [/* ... */])

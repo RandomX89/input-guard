@@ -1,10 +1,10 @@
 <?php
-namespace RandomX98\InputGuard\Tests;
+namespace InputGuard\Tests;
 
 use PHPUnit\Framework\TestCase;
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Schema\Schema;
-use RandomX98\InputGuard\Schema\Type;
+use InputGuard\Core\Level;
+use InputGuard\Schema\Schema;
+use InputGuard\Schema\Type;
 
 final class RejectUnknownFieldsTest extends TestCase {
   public function test_reject_unknown_fields_at_root(): void {

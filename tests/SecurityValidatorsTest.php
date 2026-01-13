@@ -1,9 +1,9 @@
 <?php
-namespace RandomX98\InputGuard\Tests;
+namespace InputGuard\Tests;
 
 use PHPUnit\Framework\TestCase;
-use RandomX98\InputGuard\Rules\San\San;
-use RandomX98\InputGuard\Rules\Val\Val;
+use InputGuard\Rules\San\San;
+use InputGuard\Rules\Val\Val;
 
 final class SecurityValidatorsTest extends TestCase {
     // ==================== SANITIZERS ====================

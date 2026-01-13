@@ -1,11 +1,11 @@
 <?php
-namespace RandomX98\InputGuard\Schema;
+namespace InputGuard\Schema;
 
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Contract\Sanitizer;
-use RandomX98\InputGuard\Contract\Validator;
-use RandomX98\InputGuard\Rules\San\San;
-use RandomX98\InputGuard\Rules\Val\Val;
+use InputGuard\Core\Level;
+use InputGuard\Contract\Sanitizer;
+use InputGuard\Contract\Validator;
+use InputGuard\Rules\San\San;
+use InputGuard\Rules\Val\Val;
 
 final class RuleSet {
     /** @var array<int,Sanitizer[]> */

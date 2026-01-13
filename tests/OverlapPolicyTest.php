@@ -1,11 +1,11 @@
 <?php
-namespace RandomX98\InputGuard\Tests;
+namespace InputGuard\Tests;
 
 use PHPUnit\Framework\TestCase;
-use RandomX98\InputGuard\Schema\Schema;
-use RandomX98\InputGuard\Schema\Type;
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Rules\Val\Val;
+use InputGuard\Schema\Schema;
+use InputGuard\Schema\Type;
+use InputGuard\Core\Level;
+use InputGuard\Rules\Val\Val;
 
 final class OverlapPolicyTest extends TestCase {
   public function test_default_policy_specific_field_wins(): void {

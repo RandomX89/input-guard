@@ -1,5 +1,5 @@
 <?php
-namespace RandomX98\InputGuard\Support;
+namespace InputGuard\Support;
 
 final class SchemaSpecNode {
   /** @var array<string,SchemaSpecNode> */

@@ -1,12 +1,12 @@
 <?php
-namespace RandomX98\InputGuard\Schema;
+namespace InputGuard\Schema;
 
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Core\Result;
-use RandomX98\InputGuard\Core\Error;
-use RandomX98\InputGuard\Support\Path;
-use RandomX98\InputGuard\Support\SchemaSpecNode;
-use RandomX98\InputGuard\Support\UnknownFieldDetector;
+use InputGuard\Core\Level;
+use InputGuard\Core\Result;
+use InputGuard\Core\Error;
+use InputGuard\Support\Path;
+use InputGuard\Support\SchemaSpecNode;
+use InputGuard\Support\UnknownFieldDetector;
 
 final class Schema {
 
@@ -25,7 +25,7 @@ final class Schema {
   /** @var array<string,Schema> wildcardPath => subschema */
   private array $eachObjectSchemas = [];
 
-  /** @var \RandomX98\InputGuard\Contract\SchemaValidator[] */
+  /** @var \InputGuard\Contract\SchemaValidator[] */
   private array $schemaValidators = [];
 
   public static function make(): self { return new self(); }
@@ -82,7 +82,7 @@ final class Schema {
 
       if (!is_array($raw) || array_is_list($raw)) {
         // You can also enforce this via Type::object() field; this is a safe guardrail
-        $errors[] = new Error($path, \RandomX98\InputGuard\Core\ErrorCode::OBJECT, null);
+        $errors[] = new Error($path, \InputGuard\Core\ErrorCode::OBJECT, null);
         continue;
       }
 
@@ -111,7 +111,7 @@ final class Schema {
         }
 
         if (!is_array($raw) || array_is_list($raw)) {
-          $errors[] = new Error($basePath, \RandomX98\InputGuard\Core\ErrorCode::OBJECT, null);
+          $errors[] = new Error($basePath, \InputGuard\Core\ErrorCode::OBJECT, null);
           continue;
         }
 
@@ -258,7 +258,7 @@ final class Schema {
     return $this;
   }
 
-  public function rule(\RandomX98\InputGuard\Contract\SchemaValidator $validator): self {
+  public function rule(\InputGuard\Contract\SchemaValidator $validator): self {
     $this->schemaValidators[] = $validator;
     return $this;
   }

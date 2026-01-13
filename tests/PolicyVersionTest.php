@@ -1,9 +1,9 @@
 <?php
-namespace RandomX98\InputGuard\Tests;
+namespace InputGuard\Tests;
 
 use PHPUnit\Framework\TestCase;
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Schema\Schema;
+use InputGuard\Core\Level;
+use InputGuard\Schema\Schema;
 
 final class PolicyVersionTest extends TestCase {
   public function test_result_contains_policy_version_meta(): void {

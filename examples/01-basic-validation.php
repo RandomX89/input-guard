@@ -7,10 +7,10 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Rules\Val\Val;
-use RandomX98\InputGuard\Schema\Schema;
-use RandomX98\InputGuard\Schema\Type;
+use InputGuard\Core\Level;
+use InputGuard\Rules\Val\Val;
+use InputGuard\Schema\Schema;
+use InputGuard\Schema\Type;
 
 $schema = Schema::make()
     ->field('email', Type::email()->addValidate(Level::STRICT, [Val::required()]))

@@ -1,11 +1,11 @@
 <?php
-namespace RandomX98\InputGuard\Tests;
+namespace InputGuard\Tests;
 
 use PHPUnit\Framework\TestCase;
-use RandomX98\InputGuard\Core\Error;
-use RandomX98\InputGuard\Core\ErrorCode;
-use RandomX98\InputGuard\Support\MessageCatalog;
-use RandomX98\InputGuard\Support\PresentableErrors;
+use InputGuard\Core\Error;
+use InputGuard\Core\ErrorCode;
+use InputGuard\Support\MessageCatalog;
+use InputGuard\Support\PresentableErrors;
 
 final class TranslatorTest extends TestCase {
     public function test_custom_message_override(): void {

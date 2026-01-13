@@ -7,9 +7,9 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Schema\RuleSet;
-use RandomX98\InputGuard\Schema\Schema;
+use InputGuard\Core\Level;
+use InputGuard\Schema\RuleSet;
+use InputGuard\Schema\Schema;
 
 $schema = Schema::make()
     ->field('comment', RuleSet::paranoidString()->toField())

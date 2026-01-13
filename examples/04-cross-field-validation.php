@@ -7,13 +7,13 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use RandomX98\InputGuard\Contract\SchemaValidator;
-use RandomX98\InputGuard\Core\Error;
-use RandomX98\InputGuard\Core\ErrorCode;
-use RandomX98\InputGuard\Core\Level;
-use RandomX98\InputGuard\Rules\Val\Val;
-use RandomX98\InputGuard\Schema\Schema;
-use RandomX98\InputGuard\Schema\Type;
+use InputGuard\Contract\SchemaValidator;
+use InputGuard\Core\Error;
+use InputGuard\Core\ErrorCode;
+use InputGuard\Core\Level;
+use InputGuard\Rules\Val\Val;
+use InputGuard\Schema\Schema;
+use InputGuard\Schema\Type;
 
 /**
  * Validates that password matches password_confirm
