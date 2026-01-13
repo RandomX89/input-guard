@@ -189,7 +189,7 @@ $result = $schema->process(['comment' => '<script>alert(1)</script>'], Level::PA
 | PARANOID | — | `noControlChars`, `noZeroWidthChars`, `noHtmlTags`, `noPathTraversal`, `noShellChars` |
 | PSYCHOTIC | — | `noSqlPatterns`, `printableOnly`, `maxBytes` |
 
-> **Note:** `paranoidString` blocks characters like `!`, `$`, `@` which appear in normal text. For user comments or messages, consider `antiSpam` instead.
+> **Note:** `paranoidString` blocks characters like `!`, `$`, which appear in normal text. For user comments or messages, consider `antiSpam` instead.
 
 ### ParanoidUrl
 
