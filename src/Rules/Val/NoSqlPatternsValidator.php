@@ -18,9 +18,13 @@ final class NoSqlPatternsValidator implements Validator {
         '/\bEXEC(UTE)?\s*\(/i',
         '/\bxp_\w+/i',
         '/;\s*--/',
+        '/\'\s*--/',
         '/\bOR\s+1\s*=\s*1\b/i',
         '/\bOR\s+[\'"].*[\'"]\s*=\s*[\'"].*[\'"]/i',
         '/\'\s*OR\s+\'/i',
+        '/\bWAITFOR\s+DELAY\b/i',
+        '/\bSLEEP\s*\(/i',
+        '/\bBENCHMARK\s*\(/i',
     ];
 
     public function validate(mixed $value, array $context = []): array {

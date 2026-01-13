@@ -1,13 +1,28 @@
 # InputGuard
 
-InputGuard is a PHP library for **input sanitization and validation** with:
+**InputGuard** is a **personal, opinionated PHP library** for **input sanitization and validation**, developed primarily for internal use and experimentation.
 
-- **Deterministic pipelines** (sanitize then validate)
-- **Severity levels** (`BASE`, `STRICT`, `PARANOID`, `PSYCHOTIC`)
-- **Nested paths** with dot notation (`user.email`) and **wildcards** (`items.*.name`)
-- **Composable presets** via `Type` and `RuleSet`
-- **Localization-ready errors** (validators emit codes + meta, not user strings)
-- **Security-first design** with protection against XSS, SQL injection, path traversal, shell injection
+It focuses on **clarity, determinism, and security-oriented design**, rather than being a drop-in replacement for full-featured validation frameworks.
+
+The library provides:
+
+- **Deterministic pipelines**  
+  Sanitization is always applied before validation, in a predictable and explicit order.
+
+- **Configurable severity levels**  
+  (`BASE`, `STRICT`, `PARANOID`, `PSYCHOTIC`) to progressively harden validation rules depending on context and risk tolerance.
+
+- **Nested paths with dot notation**  
+  (`user.email`) and **wildcards** (`items.*.name`) for complex and deeply structured inputs.
+
+- **Composable presets** via `Type` and `RuleSet`  
+  Designed to express intent clearly and reduce repetition in validation logic.
+
+- **Localization-ready error handling**  
+  Validators emit stable error codes and metadata only — user-facing messages are resolved externally.
+
+- **Security-first mindset**  
+  Includes defensive measures against common classes of unsafe input (such as XSS vectors, control characters, unsafe paths, and command injection patterns), while remaining explicit and opt-in.
 
 ## Table of contents
 

@@ -34,6 +34,15 @@ final class NoPathTraversalValidator implements Validator {
             }
         }
 
+        if (preg_match('/^[a-zA-Z]:[\\\\\\/]/', $value) === 1) {
+            return [new Error(
+                $context['path'] ?? '',
+                ErrorCode::NO_PATH_TRAVERSAL,
+                null,
+                ['detected' => 'windows_drive']
+            )];
+        }
+
         if (preg_match('#^[/\\\\]#', $value) === 1) {
             return [new Error(
                 $context['path'] ?? '',

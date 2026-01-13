@@ -11,7 +11,7 @@ final class NoZeroWidthCharsValidator implements Validator {
             return [];
         }
 
-        if (preg_match('/[\x{200B}-\x{200D}\x{FEFF}]/u', $value) === 1) {
+        if (preg_match('/[\x{200B}-\x{200F}\x{2060}-\x{206F}\x{FEFF}]/u', $value) === 1) {
             return [new Error(
                 $context['path'] ?? '',
                 ErrorCode::NO_ZERO_WIDTH_CHARS,

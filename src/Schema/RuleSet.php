@@ -174,7 +174,6 @@ final class RuleSet {
         return self::make()
             ->sanitize(Level::BASE, [San::trim(), San::normalizeNfkc()])
             ->sanitize(Level::STRICT, [San::nullIfEmpty()])
-            ->sanitize(Level::PARANOID, [San::stripTags()])
             ->validate(Level::BASE, [Val::typeString()])
             ->validate(Level::STRICT, [Val::maxLen($maxLen)])
             ->validate(Level::PARANOID, [
